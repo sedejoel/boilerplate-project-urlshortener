@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const isUrlHttp = require('is-url-http');
 const app = express();
 var dns = require('dns');
 var URI=[];
@@ -23,27 +24,26 @@ app.get('/', function(req, res) {
 
 // Your first API endpoint
 app.post('/api/shorturl',(req,res,next)=>{
+  console.log('===========');
+  console.log(req.body);
+  let body = req.body.url.toLowerCase();
 
-  var w3 = dns.lookup(req.body.original_url, function (err, addresses) {
-
-    //console.log(err);
-    if (err){
+  var w = dns.lookup(body, (err,adress)=>{
+    console.log(err);
+    if ((err==null) || (body=='' || (isUrlHttp(body)==false))) {
       res.json({error:'invalid url'});
     }else{
       let id=URI.length+1;
 
-    let uriExist = URI.find(el=>el.url===req.body.original_url);
+    let uriExist = URI.find(el=>el.url===body);
 
     if (uriExist){
-      res.json({"original_url":req.body.original_url, "short_url":uriExist.id});
+      res.send({original_url:body, short_url:uriExist.id});
     }else{
-      URI.push({url:req.body.original_url, id:id})
-      res.json({"original_url":req.body.original_url, "short_url":id});
+      URI.push({url:body, id:id})
+      res.send({original_url:body, short_url:id});
     }
     }
-
-    
-    //
   });
 
   
@@ -51,9 +51,12 @@ app.post('/api/shorturl',(req,res,next)=>{
 
 
 app.get('/api/shorturl/:id',(req,res)=>{
-//console.log(req.params.id);
+//console.log(URI);
 const resultat = URI.find(el=>el.id===parseInt(req.params.id));
-res.status(301).redirect(resultat.url);
+
+let uri=resultat.url;
+console.log(uri);
+res.redirect(uri);
 });
 
 app.listen(port, function() {
