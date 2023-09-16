@@ -35,10 +35,10 @@ app.post('/api/shorturl',(req,res,next)=>{
     let uriExist = URI.find(el=>el.url===req.body.original_url);
 
     if (uriExist){
-      res.json({original_url:req.body.original_url, short_url:uriExist.id});
+      res.json({"original_url":req.body.original_url, "short_url":uriExist.id});
     }else{
       URI.push({url:req.body.original_url, id:id})
-      res.json({original_url:req.body.original_url, short_url:id});
+      res.json({"original_url":req.body.original_url, "short_url":id});
     }
     }
 
