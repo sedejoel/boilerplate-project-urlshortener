@@ -27,7 +27,7 @@ app.post('/api/shorturl',(req,res,next)=>{
   var w3 = dns.lookup(req.body.original_url, function (err, addresses) {
 
     //console.log(err);
-    if (!err){
+    if (err){
       res.json({error:'invalid url'});
     }else{
       let id=URI.length+1;
